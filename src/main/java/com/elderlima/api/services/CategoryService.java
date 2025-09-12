@@ -1,0 +1,28 @@
+package com.elderlima.api.services;
+
+import com.elderlima.api.entities.Category;
+import com.elderlima.api.entities.User;
+import com.elderlima.api.repositories.CategoryRepository;
+import com.elderlima.api.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class CategoryService {
+
+    @Autowired
+    private CategoryRepository repository;
+
+    public List<Category> findAll() {
+        return repository.findAll();
+    }
+
+    public Category findById(Long id) {
+        Optional<Category> obj = repository.findById(id);
+        return obj.get();
+    }
+
+}
