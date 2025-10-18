@@ -2,8 +2,11 @@ package com.elderlima.api.services;
 
 import com.elderlima.api.entities.User;
 import com.elderlima.api.repositories.UserRepository;
+import com.elderlima.api.services.exceptions.DatabaseException;
 import com.elderlima.api.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
@@ -30,7 +33,16 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        try {
+            if (!repository.existsById(id)) {
+                throw new ResourceNotFoundException("Id not found: " + id);
+            }
+            repository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     public User update(Long id, User obj) {
