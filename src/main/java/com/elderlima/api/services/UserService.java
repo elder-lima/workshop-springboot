@@ -4,6 +4,7 @@ import com.elderlima.api.entities.User;
 import com.elderlima.api.repositories.UserRepository;
 import com.elderlima.api.services.exceptions.DatabaseException;
 import com.elderlima.api.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -46,9 +47,13 @@ public class UserService {
     }
 
     public User update(Long id, User obj) {
-        User entity = repository.getReferenceById(id);
-        updateData(entity, obj);
-        return repository.save(entity);
+        try {
+            User entity = repository.getReferenceById(id);
+            updateData(entity, obj);
+            return repository.save(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException("Id " + id);
+        }
     }
 
     private void updateData(User entity, User obj) {
